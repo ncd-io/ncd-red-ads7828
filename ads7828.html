@@ -1,0 +1,201 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ncd-ads7828',{
+        category: 'NCD',
+        color: '#a6bbcf',
+        defaults: {
+            name: {value: ""},
+			connection: {value: "", type: "ncd-comm"},
+			addr: {value: "72"},
+			interval: {value: 0, validate: RED.validators.number()},
+			outputs: {value: 1},
+			output_all: {value: 0, validate: RED.validators.number()},
+			output_mult: {value: 1, validate: RED.validators.regex(/[.0-9]/)},
+			//advanced options
+			//Single-shot will be used when necessary
+
+			//mux
+			channel_1: {value: "0"},
+			channel_2: {value: "_none"},
+			channel_3: {value: "_none"},
+			channel_4: {value: "_none"},
+			channel_5: {value: "_none"},
+			channel_6: {value: "_none"},
+			channel_7: {value: "_none"},
+			channel_8: {value: "_none"},
+
+			powerDown: {value: 3},
+
+        },
+        inputs:1,
+        outputs:1,
+		icon: "serial.png",
+        label: function() {
+            return this.name || "ADS7828";
+        },
+		outputLabels: function(i){
+			if(!this.output_all) return 'Device Status';
+			var labels = [];
+			for(var j=1;j<9;j++) if(this["channel_"+j] != '_none') labels.push('Channel '+j);
+			labels.push('Device Status');
+			return labels[i];
+		},
+		oneditprepare: function() {
+			$('.multiplexer-settings').change(processMultiplexer);
+			if(typeof this.channel_1 != 'undefined') $('.multiplexer-settings').change();
+		},
+		oneditsave: function(){
+			if(!$('#node-input-output_all').is(':checked')){
+				this.outputs = 1;
+			}else{
+				var outputs = 1;
+				for(var i=0;i<8;i++){
+					if($('#node-input-channel_'+(i+1)).val() != '_none') outputs+=1;
+				}
+				this.outputs = outputs;
+			}
+		}
+    });
+	function processMultiplexer(){
+		$('.multiplexer-settings').prop('disabled', false);
+		for(var i=0;i<8;i+=2){
+			var val = $('#node-input-channel_'+(i+1)).val();
+			if(val == '_none') continue;
+			val = parseInt(val);
+			var sEP = i == 0 ? 0 : i/2;
+			if(val == sEP || val == (sEP + 4) ){
+				$('#node-input-channel_'+(i+2)).val("_none").prop('disabled', 'disabled');
+			}
+		}
+	}
+</script>
+
+<script type="text/x-red" data-template-name="ncd-ads7828">
+	<div class="form-row">
+		<label for="node-input-name"><i class="icon-tag"></i> Name</label>
+		<input type="text" id="node-input-name" placeholder="Name">
+	</div>
+	<div class="form-row">
+		<label for="node-input-connection"><i class="icon-tag"></i> I2C Connection</label>
+		<select id="node-input-connection"></select>
+	</div>
+	<div class="form-row">
+		<label for="node-input-addr"><i class="icon-tag"></i> Device Address</label>
+		<select id="node-input-addr">
+			<option value="72">72</option>
+			<option value="73">73</option>
+			<option value="74">74</option>
+			<option value="75">75</option>
+		</select>
+	</div>
+	<div class="form-row">
+		<label for="node-input-interval"><i class="icon-repeat"></i> Interval</label>
+		<input type="text" id="node-input-interval" placeholder="Interval">
+	</div>
+	<div class="form-row">
+		<label for="node-input-output_all"><i class="icon-tag"></i> Output all channels</label>
+		<input type="checkbox" id="node-input-output_all" value="1">
+	</div>
+	<div class="form-row">
+		<label for="node-input-output_mult"><i class="icon-tag"></i> Output multiplier (0.00122 for 5V)</label>
+		<input type="text" id="node-input-output_mult" value="1">
+	</div>
+	<h4>Chip Configuration</h4>
+
+	<h4>Multiplexer Settings</h4>
+	<div class="form-row">
+		<label for="node-input-channel_1"><i class="icon-tag"></i> Channel 1</label>
+		<select id="node-input-channel_1" class="multiplexer-settings" value="1">
+			<option value="_none">Disable</option>
+			<option value="0">Differential w/ Channel 2 (1+/2-)</option>
+			<option value="4">Differential w/ Channel 2 (1-/2+)</option>
+			<option value="8">Single Ended</option>
+		</select>
+	</div>
+	<div class="form-row">
+		<label for="node-input-channel_2"><i class="icon-tag"></i> Channel 2</label>
+		<select id="node-input-channel_2" class="multiplexer-settings" value="1">
+			<option value="_none">Disable</option>
+			<option value="12">Single Ended</option>
+		</select>
+	</div>
+	<div class="form-row">
+		<label for="node-input-channel_3"><i class="icon-tag"></i> Channel 3</label>
+		<select id="node-input-channel_3" class="multiplexer-settings" value="1">
+		<option value="_none">Disable</option>
+		<option value="1">Differential w/ Channel 4 (3+/4-)</option>
+		<option value="5">Differential w/ Channel 4 (3-/4+)</option>
+		<option value="9">Single Ended</option>
+		</select>
+	</div>
+	<div class="form-row">
+		<label for="node-input-channel_4"><i class="icon-tag"></i> Channel 4</label>
+		<select id="node-input-channel_4" class="multiplexer-settings" value="1">
+			<option value="_none">Disable</option>
+			<option value="13">Single Ended</option>
+		</select>
+	</div>
+	<div class="form-row">
+		<label for="node-input-channel_5"><i class="icon-tag"></i> Channel 5</label>
+		<select id="node-input-channel_5" class="multiplexer-settings" value="1">
+		<option value="_none">Disable</option>
+		<option value="2">Differential w/ Channel 6 (5+/6-)</option>
+		<option value="6">Differential w/ Channel 6 (5-/6+)</option>
+		<option value="10">Single Ended</option>
+		</select>
+	</div>
+	<div class="form-row">
+		<label for="node-input-channel_6"><i class="icon-tag"></i> Channel 6</label>
+		<select id="node-input-channel_6" class="multiplexer-settings" value="1">
+			<option value="_none">Disable</option>
+			<option value="14">Single Ended</option>
+		</select>
+	</div>
+	<div class="form-row">
+		<label for="node-input-channel_7"><i class="icon-tag"></i> Channel 7</label>
+		<select id="node-input-channel_7" class="multiplexer-settings" value="1">
+		<option value="_none">Disable</option>
+		<option value="3">Differential w/ Channel 7 (7+/8-)</option>
+		<option value="7">Differential w/ Channel 7 (7-/8+)</option>
+		<option value="11">Single Ended</option>
+		</select>
+	</div>
+	<div class="form-row">
+		<label for="node-input-channel_8"><i class="icon-tag"></i> Channel 8</label>
+		<select id="node-input-channel_8" class="multiplexer-settings" value="1">
+			<option value="_none">Disable</option>
+			<option value="15">Single Ended</option>
+		</select>
+	</div>
+	<div class="form-row">
+		<label for="node-input-powerDown"><i class="icon-tag"></i> Power Down Settings</label>
+		<select id="node-input-powerDown" value="1">
+		<option value="0">Power Down Between Conversions</option>
+		<option value="1">Internal Reference Off, A/D Converter On</option>
+		<option value="2">Internal Reference On, A/D Converter Off</option>
+		<option value="3">Internal Reference On, A/D Converter On
+		</select>
+	</div>
+</script>
+
+<script type="text/x-red" data-help-name="ncd-ads7828">
+    <h3>I2C Connection</h3>
+	<p>Configure the connection you want to use to communicate to your I2C device. Native I2C and USB to I2C converters are supported.</p>
+	<h3>Device Address</h3>
+	<p>The ADS1115 has a configurable I2C Address, the NCD board exposes an address pin to set it:</p>
+	<ul>
+		<li><b>Uninstalled</b> 72</li>
+		<li><b>Installed</b> 73</li>
+	</ul>
+	<h3>Interval</h3>
+	<p>The interval defines the time between status checks. It is in milliseconds, and the interval starts after the previous check has finished.</p>
+	<h3>Output All Channels</h3>
+	<p>By default this device will have 1 output, which will send a payload whenever it performs a read. Use this option to enable seperate outputs for each channel.</p>
+	<h3>Output multiplier</h3>
+	<p>All values will be multiplied by this before being sent with the payload.
+
+	<h3>Output Values</h3>
+	<p>When Output All Channels is selected, each output represents a channel, the topic will indicate the channel (channel_(n))</p>
+	<p>The last output on the node (the only output if Output All Channels is not selected) will send an object as the payload keyed by the channel.</p>
+	<h3>Other settings</h3>
+	<p>All of these settings are explained in detail in the data sheet. We have set the default values to reflect the most used configuration.</p>
+</script>

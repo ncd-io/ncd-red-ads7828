@@ -1,0 +1,30 @@
+{
+    "name": "ncd-red-ads7828",
+    "version": "0.0.1",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ncd-io/ncd-red-ads7828"
+    },
+    "keywords": [
+        "ADS7828",
+        "ncd",
+        "ADC",
+        "i2c"
+    ],
+    "author": "Trey Felton",
+    "license": "MIT",
+    "node-red": {
+        "nodes": {
+            "ncd-ads7828": "ads7828.js"
+        }
+    },
+    "dependencies": {
+        "ncd-red-comm": "^1.1.3",
+        "promise-queue": "^2.2.5"
+    }
+}
