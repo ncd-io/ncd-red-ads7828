@@ -9,6 +9,12 @@ var serial = new comms.NcdSerial('/dev/tty.usbserial-DN03Q7F9', 115200);
 var comm = new comms.NcdSerialI2C(serial, 0);
 
 /*
+ * Use the I2C port on a Raspberry Pi instead of the USB converter
+ */
+
+ //comm = new comms.NcdI2C(1);
+
+/*
  * Use the native I2C port on the Raspberry Pi
  */
 //var comm = new comms.NcdI2C(1);
