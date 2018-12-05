@@ -78,9 +78,9 @@ module.exports = function(RED){
 			if(device_status(node)){
 				var _status = {};
 				for(var i in channels){
+					let chnl = i;
 					queue.add(() => {
 						return new Promise((fulfill, reject) => {
-							var chnl = i;
 							node.sensor.get(channels[chnl]).then((res) => {
 								_status[chnl] = res;
 								fulfill();
