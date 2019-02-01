@@ -37,140 +37,142 @@
 			return labels[i];
 		},
 		oneditprepare: function() {
-			$('.multiplexer-settings').change(processMultiplexer);
+			$('#ads7828_settings .multiplexer-settings').change(processMultiplexer);
 			if(typeof this.channel_1 != 'undefined') $('.multiplexer-settings').change();
 		},
 		oneditsave: function(){
-			if(!$('#node-input-output_all').is(':checked')){
+			if(!$('#ads7828_settings #node-input-output_all').is(':checked')){
 				this.outputs = 1;
 			}else{
 				var outputs = 1;
 				for(var i=0;i<8;i++){
-					if($('#node-input-channel_'+(i+1)).val() != '_none') outputs+=1;
+					if($('#ads7828_settings #node-input-channel_'+(i+1)).val() != '_none') outputs+=1;
 				}
 				this.outputs = outputs;
 			}
 		}
     });
 	function processMultiplexer(){
-		$('.multiplexer-settings').prop('disabled', false);
+		$('#ads7828_settings .multiplexer-settings').prop('disabled', false);
 		for(var i=0;i<8;i+=2){
-			var val = $('#node-input-channel_'+(i+1)).val();
+			var val = $('#ads7828_settings #node-input-channel_'+(i+1)).val();
 			if(val == '_none') continue;
 			val = parseInt(val);
 			var sEP = i == 0 ? 0 : i/2;
 			if(val == sEP || val == (sEP + 4) ){
-				$('#node-input-channel_'+(i+2)).val("_none").prop('disabled', 'disabled');
+				$('#ads7828_settings #node-input-channel_'+(i+2)).val("_none").prop('disabled', 'disabled');
 			}
 		}
 	}
 </script>
 
 <script type="text/x-red" data-template-name="ncd-ads7828">
-	<div class="form-row">
-		<label for="node-input-name"><i class="icon-tag"></i> Name</label>
-		<input type="text" id="node-input-name" placeholder="Name">
-	</div>
-	<div class="form-row">
-		<label for="node-input-connection"><i class="icon-tag"></i> I2C Connection</label>
-		<select id="node-input-connection"></select>
-	</div>
-	<div class="form-row">
-		<label for="node-input-addr"><i class="icon-tag"></i> Device Address</label>
-		<select id="node-input-addr">
-			<option value="72">72</option>
-			<option value="73">73</option>
-			<option value="74">74</option>
-			<option value="75">75</option>
-		</select>
-	</div>
-	<div class="form-row">
-		<label for="node-input-interval"><i class="icon-repeat"></i> Interval</label>
-		<input type="text" id="node-input-interval" placeholder="Interval">
-	</div>
-	<div class="form-row">
-		<label for="node-input-output_all"><i class="icon-tag"></i> Output all channels</label>
-		<input type="checkbox" id="node-input-output_all" value="1">
-	</div>
-	<div class="form-row">
-		<label for="node-input-output_mult"><i class="icon-tag"></i> Output multiplier (0.00122 for 5V)</label>
-		<input type="text" id="node-input-output_mult" value="1">
-	</div>
-	<h4>Chip Configuration</h4>
+	<div id="ads7828_settings">
+		<div class="form-row">
+			<label for="node-input-name"><i class="icon-tag"></i> Name</label>
+			<input type="text" id="node-input-name" placeholder="Name">
+		</div>
+		<div class="form-row">
+			<label for="node-input-connection"><i class="icon-tag"></i> I2C Connection</label>
+			<select id="node-input-connection"></select>
+		</div>
+		<div class="form-row">
+			<label for="node-input-addr"><i class="icon-tag"></i> Device Address</label>
+			<select id="node-input-addr">
+				<option value="72">72</option>
+				<option value="73">73</option>
+				<option value="74">74</option>
+				<option value="75">75</option>
+			</select>
+		</div>
+		<div class="form-row">
+			<label for="node-input-interval"><i class="icon-repeat"></i> Interval</label>
+			<input type="text" id="node-input-interval" placeholder="Interval">
+		</div>
+		<div class="form-row">
+			<label for="node-input-output_all"><i class="icon-tag"></i> Output all channels</label>
+			<input type="checkbox" id="node-input-output_all" value="1">
+		</div>
+		<div class="form-row">
+			<label for="node-input-output_mult"><i class="icon-tag"></i> Output multiplier (0.00122 for 5V)</label>
+			<input type="text" id="node-input-output_mult" value="1">
+		</div>
+		<h4>Chip Configuration</h4>
 
-	<h4>Multiplexer Settings</h4>
-	<div class="form-row">
-		<label for="node-input-channel_1"><i class="icon-tag"></i> Channel 1</label>
-		<select id="node-input-channel_1" class="multiplexer-settings" value="1">
+		<h4>Multiplexer Settings</h4>
+		<div class="form-row">
+			<label for="node-input-channel_1"><i class="icon-tag"></i> Channel 1</label>
+			<select id="node-input-channel_1" class="multiplexer-settings" value="1">
+				<option value="_none">Disable</option>
+				<option value="0">Differential w/ Channel 2 (1+/2-)</option>
+				<option value="4">Differential w/ Channel 2 (1-/2+)</option>
+				<option value="8">Single Ended</option>
+			</select>
+		</div>
+		<div class="form-row">
+			<label for="node-input-channel_2"><i class="icon-tag"></i> Channel 2</label>
+			<select id="node-input-channel_2" class="multiplexer-settings" value="1">
+				<option value="_none">Disable</option>
+				<option value="12">Single Ended</option>
+			</select>
+		</div>
+		<div class="form-row">
+			<label for="node-input-channel_3"><i class="icon-tag"></i> Channel 3</label>
+			<select id="node-input-channel_3" class="multiplexer-settings" value="1">
 			<option value="_none">Disable</option>
-			<option value="0">Differential w/ Channel 2 (1+/2-)</option>
-			<option value="4">Differential w/ Channel 2 (1-/2+)</option>
-			<option value="8">Single Ended</option>
-		</select>
-	</div>
-	<div class="form-row">
-		<label for="node-input-channel_2"><i class="icon-tag"></i> Channel 2</label>
-		<select id="node-input-channel_2" class="multiplexer-settings" value="1">
+			<option value="1">Differential w/ Channel 4 (3+/4-)</option>
+			<option value="5">Differential w/ Channel 4 (3-/4+)</option>
+			<option value="9">Single Ended</option>
+			</select>
+		</div>
+		<div class="form-row">
+			<label for="node-input-channel_4"><i class="icon-tag"></i> Channel 4</label>
+			<select id="node-input-channel_4" class="multiplexer-settings" value="1">
+				<option value="_none">Disable</option>
+				<option value="13">Single Ended</option>
+			</select>
+		</div>
+		<div class="form-row">
+			<label for="node-input-channel_5"><i class="icon-tag"></i> Channel 5</label>
+			<select id="node-input-channel_5" class="multiplexer-settings" value="1">
 			<option value="_none">Disable</option>
-			<option value="12">Single Ended</option>
-		</select>
-	</div>
-	<div class="form-row">
-		<label for="node-input-channel_3"><i class="icon-tag"></i> Channel 3</label>
-		<select id="node-input-channel_3" class="multiplexer-settings" value="1">
-		<option value="_none">Disable</option>
-		<option value="1">Differential w/ Channel 4 (3+/4-)</option>
-		<option value="5">Differential w/ Channel 4 (3-/4+)</option>
-		<option value="9">Single Ended</option>
-		</select>
-	</div>
-	<div class="form-row">
-		<label for="node-input-channel_4"><i class="icon-tag"></i> Channel 4</label>
-		<select id="node-input-channel_4" class="multiplexer-settings" value="1">
+			<option value="2">Differential w/ Channel 6 (5+/6-)</option>
+			<option value="6">Differential w/ Channel 6 (5-/6+)</option>
+			<option value="10">Single Ended</option>
+			</select>
+		</div>
+		<div class="form-row">
+			<label for="node-input-channel_6"><i class="icon-tag"></i> Channel 6</label>
+			<select id="node-input-channel_6" class="multiplexer-settings" value="1">
+				<option value="_none">Disable</option>
+				<option value="14">Single Ended</option>
+			</select>
+		</div>
+		<div class="form-row">
+			<label for="node-input-channel_7"><i class="icon-tag"></i> Channel 7</label>
+			<select id="node-input-channel_7" class="multiplexer-settings" value="1">
 			<option value="_none">Disable</option>
-			<option value="13">Single Ended</option>
-		</select>
-	</div>
-	<div class="form-row">
-		<label for="node-input-channel_5"><i class="icon-tag"></i> Channel 5</label>
-		<select id="node-input-channel_5" class="multiplexer-settings" value="1">
-		<option value="_none">Disable</option>
-		<option value="2">Differential w/ Channel 6 (5+/6-)</option>
-		<option value="6">Differential w/ Channel 6 (5-/6+)</option>
-		<option value="10">Single Ended</option>
-		</select>
-	</div>
-	<div class="form-row">
-		<label for="node-input-channel_6"><i class="icon-tag"></i> Channel 6</label>
-		<select id="node-input-channel_6" class="multiplexer-settings" value="1">
-			<option value="_none">Disable</option>
-			<option value="14">Single Ended</option>
-		</select>
-	</div>
-	<div class="form-row">
-		<label for="node-input-channel_7"><i class="icon-tag"></i> Channel 7</label>
-		<select id="node-input-channel_7" class="multiplexer-settings" value="1">
-		<option value="_none">Disable</option>
-		<option value="3">Differential w/ Channel 7 (7+/8-)</option>
-		<option value="7">Differential w/ Channel 7 (7-/8+)</option>
-		<option value="11">Single Ended</option>
-		</select>
-	</div>
-	<div class="form-row">
-		<label for="node-input-channel_8"><i class="icon-tag"></i> Channel 8</label>
-		<select id="node-input-channel_8" class="multiplexer-settings" value="1">
-			<option value="_none">Disable</option>
-			<option value="15">Single Ended</option>
-		</select>
-	</div>
-	<div class="form-row">
-		<label for="node-input-powerDown"><i class="icon-tag"></i> Power Down Settings</label>
-		<select id="node-input-powerDown" value="1">
-		<option value="0">Power Down Between Conversions</option>
-		<option value="1">Internal Reference Off, A/D Converter On</option>
-		<option value="2">Internal Reference On, A/D Converter Off</option>
-		<option value="3">Internal Reference On, A/D Converter On
-		</select>
+			<option value="3">Differential w/ Channel 7 (7+/8-)</option>
+			<option value="7">Differential w/ Channel 7 (7-/8+)</option>
+			<option value="11">Single Ended</option>
+			</select>
+		</div>
+		<div class="form-row">
+			<label for="node-input-channel_8"><i class="icon-tag"></i> Channel 8</label>
+			<select id="node-input-channel_8" class="multiplexer-settings" value="1">
+				<option value="_none">Disable</option>
+				<option value="15">Single Ended</option>
+			</select>
+		</div>
+		<div class="form-row">
+			<label for="node-input-powerDown"><i class="icon-tag"></i> Power Down Settings</label>
+			<select id="node-input-powerDown" value="1">
+			<option value="0">Power Down Between Conversions</option>
+			<option value="1">Internal Reference Off, A/D Converter On</option>
+			<option value="2">Internal Reference On, A/D Converter Off</option>
+			<option value="3">Internal Reference On, A/D Converter On
+			</select>
+		</div>
 	</div>
 </script>
 
